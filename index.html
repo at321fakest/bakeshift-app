@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <meta name="theme-color" content="#b4532a">
   <title>Bakeshift</title>
   <link rel="manifest" href="manifest.webmanifest">
@@ -10,7 +10,9 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     html, body { margin: 0; height: 100%; background: #faf6f1; overflow: hidden; }
-    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+    /* Normal-flow iframe (not position:fixed, no viewport-fit=cover): fixed/edge-to-edge frames
+       make Chrome on Android misplace taps and text selection by about the status-bar height. */
+    iframe { display: block; width: 100%; height: 100vh; height: 100dvh; border: 0; }
     .splash {
       position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
       background: #faf6f1; color: #7a6d64; font: 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: opacity .3s;
@@ -42,7 +44,10 @@
     var splash = document.getElementById('splash');
     var frame = document.getElementById('app');
     document.getElementById('direct').href = src;
-    frame.addEventListener('load', function () { setTimeout(function () { splash.classList.add('gone'); }, 300); });
+    frame.addEventListener('load', function () {
+      setTimeout(function () { splash.classList.add('gone'); }, 300);
+      setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 700);
+    });
     setTimeout(function () { splash.classList.add('slow'); }, 8000);
     frame.src = src;
 
