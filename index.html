@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b4532a">
+  <title>Bakeshift</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    html, body { margin: 0; height: 100%; background: #faf6f1; overflow: hidden; }
+    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+    .splash {
+      position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      background: #faf6f1; color: #7a6d64; font: 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: opacity .3s;
+    }
+    .splash img { width: 96px; height: 96px; border-radius: 22px; }
+    .splash a { color: #b4532a; font-weight: 600; margin-top: 24px; opacity: 0; transition: opacity .3s; }
+    .splash.slow a { opacity: 1; }
+    .splash.gone { opacity: 0; pointer-events: none; }
+    @media (prefers-color-scheme: dark) { html, body, .splash { background: #1b1714; } }
+  </style>
+</head>
+<body>
+  <div class="splash" id="splash">
+    <img src="icon-192.png" alt="">
+    <div>Opening your recipes…</div>
+    <a id="direct" href="#">Stuck? Open Bakeshift directly</a>
+  </div>
+  <iframe id="app" title="Bakeshift" allow="clipboard-write; screen-wake-lock; camera"></iframe>
+  <script>
+    // The Bakeshift web app (Google Apps Script deployment). Only its owner can open it.
+    var APP_URL = 'https://script.google.com/macros/s/AKfycbwuRSAV-WyqofqVqa6Z96a8lCQto4OKX0m7embbO4Zp6esMMUldhXZBIMrTKDDv3NuI/exec';
+
+    // Android share sheet: "Share → Bakeshift" sends the page URL here (often inside "text").
+    var params = new URLSearchParams(location.search);
+    var shared = params.get('url') || ((params.get('text') || '').match(/https?:\/\/\S+/) || [])[0] || '';
+    var src = APP_URL + (shared ? '?import=' + encodeURIComponent(shared) : '');
+    if (shared) history.replaceState(null, '', './');
+
+    var splash = document.getElementById('splash');
+    var frame = document.getElementById('app');
+    document.getElementById('direct').href = src;
+    frame.addEventListener('load', function () { setTimeout(function () { splash.classList.add('gone'); }, 300); });
+    setTimeout(function () { splash.classList.add('slow'); }, 8000);
+    frame.src = src;
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+  </script>
+</body>
+</html>
