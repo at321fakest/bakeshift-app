@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#16121f">
+  <title>Bakeshift Privacy Policy</title>
+  <link rel="icon" href="icon-192.png">
+  <style>
+    :root { --bg: #16121f; --text: #f2effa; --muted: #a7a1bd; --link: #b197fc; --line: #332c47; }
+    @media (prefers-color-scheme: light) { :root { --bg: #f6f5fb; --text: #1d1a27; --muted: #5e5873; --link: #5f3dc4; --line: #dcd8ea; } }
+    html { background: var(--bg); }
+    body { max-width: 720px; margin: 0 auto; padding: 32px 18px 64px; color: var(--text); background: var(--bg);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    h1 { font-size: 1.7rem; margin: 0 0 4px; }
+    h2 { font-size: 1.15rem; margin: 28px 0 6px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    a { color: var(--link); }
+    table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <p><a href="./">← Bakeshift</a></p>
+  <h1>Bakeshift Privacy Policy</h1>
+  <p class="muted">Last updated: 3 November 2026</p>
+
+  <p>Bakeshift is a free recipe app built on Google Apps Script. It keeps your recipes, shopping list and meal plan in your own Google Drive.
+    The developer of Bakeshift does not run a server, and does not collect, receive or store your data.</p>
+
+  <h2>Where your data is stored</h2>
+  <p>When you first use Bakeshift, it creates a folder named <b>Bakeshift</b> in your Google Drive containing:</p>
+  <ul>
+    <li><b>Bakeshift Recipes</b>: a Google Sheet with your recipes, shopping list and meal plan.</li>
+    <li><b>Photos</b>: pictures you add to recipes.</li>
+    <li><b>Bakeshift Shopping List</b>: only if you choose to share your shopping list.</li>
+  </ul>
+  <p>The app runs under your own Google account. These files belong to you, stay in your Drive, and are not visible to the developer or other users unless you share them yourself.</p>
+
+  <h2>Google data the app uses, and why</h2>
+  <table>
+    <tr><th>Permission</th><th>What Bakeshift does with it</th></tr>
+    <tr><td>Google Drive: files created by this app</td><td>Creates the Bakeshift folder, stores recipe photos, and briefly creates a temporary document to read text from a recipe photo (deleted right after). It cannot see your other Drive files.</td></tr>
+    <tr><td>Google Sheets</td><td>Reads and writes your recipe sheet, and a shared shopping list if someone shares one with you.</td></tr>
+    <tr><td>Your email address</td><td>Shows who a shared shopping list is shared with. Only used inside the app.</td></tr>
+    <tr><td>Connect to external services</td><td>Fetches recipe pages and video descriptions you ask it to import, and runs the web searches you type (see below).</td></tr>
+  </table>
+  <p>Bakeshift's use and transfer of information received from Google APIs adheres to the
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.
+    Your Google data is never sold, never used for advertising, and never transferred to anyone, except as described below to provide features you use.</p>
+
+  <h2>Services Bakeshift contacts on your behalf</h2>
+  <p>Only when you use the matching feature, Bakeshift sends a request from Google's servers to:</p>
+  <ul>
+    <li><b>The recipe website or video page</b> you import (YouTube, TikTok, Instagram or any recipe site), to read the recipe.</li>
+    <li><b>DuckDuckGo</b>: the words you type in recipe search.</li>
+    <li><b>Openverse</b> (by WordPress): the words you type when searching for photos.</li>
+    <li><b>Google Gemini</b>, only if you turn on AI import with your own Gemini API key: the page text, caption, photo or video link you import.
+      On Gemini's free tier, Google may use that content to improve its products. Your API key is stored in your own Google account's
+      Apps Script settings and is sent only to Google's Gemini API.</li>
+  </ul>
+  <p>These services receive only what is needed for the request, never your recipes or Drive files.</p>
+
+  <h2>Sharing</h2>
+  <p>Nothing is shared unless you choose to share it. If you share your shopping list, the person you name gets edit access to the
+    <b>Bakeshift Shopping List</b> spreadsheet only. You can stop sharing at any time in the app.</p>
+
+  <h2>On this website</h2>
+  <p>This page and the Bakeshift home-screen launcher are hosted on GitHub Pages. The launcher remembers in your browser whether you have
+    finished setup. It uses no cookies, analytics or trackers.</p>
+
+  <h2>Deleting your data</h2>
+  <ul>
+    <li>Delete the <b>Bakeshift</b> folder from your Google Drive to remove everything the app stored.</li>
+    <li>Remove the app's access at <a href="https://myaccount.google.com/connections">Google Account → Third-party connections</a>.</li>
+  </ul>
+
+  <h2>Children</h2>
+  <p>Bakeshift is not directed at children under 13.</p>
+
+  <h2>Changes and contact</h2>
+  <p>If this policy changes, the date at the top changes too. Questions or requests:
+    <a href="https://github.com/at321fakest/bakeshift-app/issues">open an issue on GitHub</a>.</p>
+</body>
+</html>

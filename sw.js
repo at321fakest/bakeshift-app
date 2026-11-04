@@ -1,7 +1,7 @@
 // Keeps the launcher shell available so the home-screen icon opens instantly.
 // Only this launcher's own files are cached; the recipe app itself always loads live from Google.
-var CACHE = 'bakeshift-launcher-v5';
-var FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
+var CACHE = 'bakeshift-launcher-v6';
+var FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'privacy.html', 'terms.html'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));

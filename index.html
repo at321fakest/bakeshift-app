@@ -4,60 +4,255 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <meta name="theme-color" content="#16121f">
+  <meta name="description" content="Bakeshift: a free recipe app that keeps your recipes, shopping list and meal plan in your own Google Drive.">
   <title>Bakeshift</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&text=BAKESHIFT&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
-    html, body { margin: 0; height: 100%; background: #16121f; overflow: hidden; }
+    :root {
+      --bg: #16121f; --card: #1f1a2c; --line: #332c47; --text: #f2effa; --muted: #a7a1bd; --link: #b197fc; --ok: #51cf66;
+      --prism: linear-gradient(115deg, #3cf2b4 0%, #b8f7a6 15%, #fbf3a0 27%, #ffc98f 40%, #ff8fa0 52%, #ff4fae 62%, #c04de6 75%, #7a5cff 87%, #1e90ff 100%);
+    }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body.running { overflow: hidden; }
     /* Normal-flow iframe (not position:fixed, no viewport-fit=cover): fixed/edge-to-edge frames
        make Chrome on Android misplace taps and text selection by about the status-bar height. */
     iframe { display: block; width: 100%; height: 100vh; height: 100dvh; border: 0; }
+    .hidden { display: none !important; }
+    .word {
+      font: 400 28px "Audiowide", -apple-system, sans-serif; letter-spacing: .06em; color: transparent;
+      background: var(--prism); -webkit-background-clip: text; background-clip: text;
+    }
+    a { color: var(--link); }
+
+    /* Splash while the app loads */
     .splash {
-      position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
-      background: #16121f; color: #a7a1bd; font: 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: opacity .3s;
+      position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      background: var(--bg); color: var(--muted); transition: opacity .3s;
     }
     .splash img { width: 96px; height: 96px; border-radius: 22px; }
-    .splash .word {
-      font: 400 28px "Audiowide", -apple-system, sans-serif; letter-spacing: .06em; color: transparent; -webkit-background-clip: text; background-clip: text;
-      background: linear-gradient(115deg, #3cf2b4 0%, #b8f7a6 15%, #fbf3a0 27%, #ffc98f 40%, #ff8fa0 52%, #ff4fae 62%, #c04de6 75%, #7a5cff 87%, #1e90ff 100%);
-      -webkit-background-clip: text; background-clip: text;
-    }
-    .splash a { color: #b197fc; font-weight: 600; margin-top: 24px; opacity: 0; transition: opacity .3s; }
-    .splash.slow a { opacity: 1; }
     .splash.gone { opacity: 0; pointer-events: none; }
+    .help {
+      position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 3; padding: 14px 16px; border-radius: 16px;
+      background: linear-gradient(var(--card), var(--card)) padding-box, var(--prism) border-box; border: 1.5px solid transparent;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .5); font-size: 15px;
+    }
+    .help p { margin: 0 0 10px; }
+    .help .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Welcome / setup */
+    .welcome { max-width: 520px; margin: 0 auto; padding: 32px 18px 48px; box-sizing: border-box; }
+    .hero { text-align: center; margin-bottom: 26px; }
+    .hero img { width: 84px; height: 84px; border-radius: 20px; }
+    .hero .word { font-size: 34px; margin-top: 10px; }
+    .hero p { color: var(--muted); margin: 8px 0 0; }
+    .step {
+      position: relative; padding: 18px 18px 18px 64px; margin: 14px 0; border-radius: 18px; border: 1.5px solid transparent;
+      background: linear-gradient(var(--card), var(--card)) padding-box, var(--prism) border-box;
+    }
+    .step .n {
+      position: absolute; left: 16px; top: 16px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: var(--prism); color: #16121f; font-weight: 800;
+    }
+    .step.done .n { background: var(--ok); }
+    .step h2 { margin: 2px 0 6px; font: 400 18px "Audiowide", -apple-system, sans-serif; letter-spacing: .03em; }
+    .step p, .step ol { margin: 6px 0; color: var(--muted); font-size: 15px; }
+    .step ol { padding-left: 20px; }
+    .step b { color: var(--text); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 18px; margin-top: 10px;
+      border-radius: 14px; border: 0; cursor: pointer; font: 700 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--prism); color: #16121f; text-decoration: none;
+    }
+    .btn.plain { background: #2a2342; color: var(--text); font-weight: 600; }
+    .btn.small { min-height: 38px; padding: 6px 14px; font-size: 14px; margin-top: 0; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .alt { text-align: center; margin-top: 22px; color: var(--muted); font-size: 15px; }
+    .foot { text-align: center; margin-top: 30px; font-size: 13px; color: var(--muted); }
+    .foot a { color: var(--muted); }
   </style>
 </head>
 <body>
-  <div class="splash" id="splash">
+  <!-- Setup screen: shown when someone opens this page in a browser tab (not the installed app). -->
+  <main class="welcome hidden" id="welcome">
+    <div class="hero">
+      <img src="icon-192.png" alt="">
+      <div class="word">BAKESHIFT</div>
+      <p>Your recipes, shopping list and meal plan, saved in your own Google Drive. Free, and nobody else can see your recipes.</p>
+    </div>
+
+    <section class="step" id="step1">
+      <div class="n">1</div>
+      <h2>Sign in with Google</h2>
+      <div id="step1-todo">
+        <p>Google will ask you to approve Bakeshift:</p>
+        <ol>
+          <li>Pick your Google account.</li>
+          <li>On <b>Google hasn't verified this app</b>, tap <b>Advanced</b>, then <b>Go to Bakeshift</b>.</li>
+          <li>Tick <b>Select all</b>, then tap <b>Continue</b>.</li>
+        </ol>
+        <a class="btn" id="signin" href="#">Sign in with Google</a>
+      </div>
+      <div id="step1-done" class="hidden">
+        <p><span class="ok">✓ Done.</span> Your Bakeshift folder is ready in Google Drive.</p>
+        <p><a href="#" id="signin-again">Sign in again</a></p>
+      </div>
+    </section>
+
+    <section class="step" id="step2">
+      <div class="n">2</div>
+      <h2>Add it to your home screen</h2>
+      <div id="install-android" class="hidden">
+        <button class="btn" id="install-btn">Install Bakeshift</button>
+      </div>
+      <div id="install-manual-android" class="hidden">
+        <p>In Chrome, tap <b>⋮</b> (top right), then <b>Add to Home screen</b>, then <b>Install</b>.</p>
+      </div>
+      <div id="install-ios" class="hidden">
+        <ol>
+          <li>Tap the <b>Share</b> button (the square with an arrow) at the bottom of Safari.</li>
+          <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+        </ol>
+        <p>The first time you open it from the home screen, sign in to Google once more. iPhones keep home-screen apps signed in separately.</p>
+      </div>
+      <div id="install-other" class="hidden">
+        <p>On a computer, use Chrome or Edge: click the install icon at the right end of the address bar. Or just bookmark this page.</p>
+      </div>
+      <p id="installed" class="hidden"><span class="ok">✓ Installed.</span> Open Bakeshift from your home screen.</p>
+    </section>
+
+    <div class="alt">
+      <a class="btn plain" id="open-here" href="?open=1">Open Bakeshift in this browser</a>
+    </div>
+
+    <p class="foot">
+      Bakeshift runs on Google Apps Script under your own Google account and stores everything in a Bakeshift folder in your Google Drive.
+      <br><a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms</a>
+    </p>
+  </main>
+
+  <div class="splash hidden" id="splash">
     <img src="icon-192.png" alt="">
     <div class="word">BAKESHIFT</div>
     <div>Opening your recipes…</div>
-    <a id="direct" href="#">Stuck? Open Bakeshift directly</a>
   </div>
-  <iframe id="app" title="Bakeshift" allow="clipboard-write; screen-wake-lock; camera"></iframe>
+  <div class="help hidden" id="help">
+    <p><b>Bakeshift isn't opening?</b> Google may need you to sign in or approve it again.</p>
+    <div class="row">
+      <a class="btn small" id="help-signin" href="#">Sign in to Google</a>
+      <button class="btn plain small" id="help-close">Dismiss</button>
+    </div>
+  </div>
+  <iframe id="app" class="hidden" title="Bakeshift" allow="clipboard-write; screen-wake-lock; camera"></iframe>
+
   <script>
-    // The Bakeshift web app (Google Apps Script deployment). Only its owner can open it.
-    var APP_URL = 'https://script.google.com/macros/s/AKfycbwuRSAV-WyqofqVqa6Z96a8lCQto4OKX0m7embbO4Zp6esMMUldhXZBIMrTKDDv3NuI/exec';
+    (function () {
+      // The shared Bakeshift web app (Google Apps Script deployment). Each person who opens it
+      // runs it under their own Google account, with their own data.
+      var DEFAULT_APP = 'https://script.google.com/macros/s/AKfycbwuRSAV-WyqofqVqa6Z96a8lCQto4OKX0m7embbO4Zp6esMMUldhXZBIMrTKDDv3NuI/exec';
+      var APP_RE = /^https:\/\/script\.google\.com\/(?:a\/[\w.-]+\/)?macros\/s\/[\w-]{20,}\/exec$/;
 
-    // Android share sheet: "Share → Bakeshift" sends the page URL here (often inside "text").
-    var params = new URLSearchParams(location.search);
-    var shared = params.get('url') || ((params.get('text') || '').match(/https?:\/\/\S+/) || [])[0] || '';
-    var src = APP_URL + (shared ? '?import=' + encodeURIComponent(shared) : '');
-    if (shared) history.replaceState(null, '', './');
+      function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+      function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
-    var splash = document.getElementById('splash');
-    var frame = document.getElementById('app');
-    document.getElementById('direct').href = src;
-    frame.addEventListener('load', function () {
-      setTimeout(function () { splash.classList.add('gone'); }, 300);
-      setTimeout(function () { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 700);
-    });
-    setTimeout(function () { splash.classList.add('slow'); }, 8000);
-    frame.src = src;
+      var params = new URLSearchParams(location.search);
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+      // Your own copy: ?app=<your /exec link> makes this launcher open your copy instead (remembered).
+      var custom = params.get('app');
+      if (custom === 'default') store('bakeshift.app', null);
+      else if (custom && APP_RE.test(custom)) store('bakeshift.app', custom);
+      var stored = load('bakeshift.app');
+      var APP_URL = stored && APP_RE.test(stored) ? stored : DEFAULT_APP;
+
+      // Coming back from Google's sign-in (the app links here with ?step=2).
+      if (params.get('step') === '2') store('bakeshift.signedIn', '1');
+
+      // Android share sheet: "Share → Bakeshift" sends the page URL here (often inside "text").
+      var shared = params.get('url') || ((params.get('text') || '').match(/https?:\/\/\S+/) || [])[0] || '';
+      if (params.toString()) history.replaceState(null, '', location.pathname);
+
+      var ua = navigator.userAgent;
+      var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var isAndroid = /Android/i.test(ua);
+      var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+      var $ = function (id) { return document.getElementById(id); };
+      var show = function (id, on) { $(id).classList.toggle('hidden', on === false); };
+
+      var appSrc = APP_URL + (shared ? '?import=' + encodeURIComponent(shared) : '');
+      var setupSrc = APP_URL + '?setup=1';
+      $('signin').href = $('signin-again').href = $('help-signin').href = setupSrc;
+
+      if (shared || standalone || params.get('open')) runApp(); else welcome();
+
+      function runApp() {
+        // Safari blocks Google's sign-in cookies inside frames, so iPhones open the app directly.
+        if (isIOS) { location.replace(appSrc); return; }
+        document.body.classList.add('running');
+        show('splash');
+        var frame = $('app');
+        var ready = false;
+        var hideSplash = function () {
+          $('splash').classList.add('gone');
+          setTimeout(function () { show('splash', false); }, 400);
+        };
+        // The app posts "ready" once your recipes have loaded.
+        window.addEventListener('message', function (e) {
+          var d = e.data;
+          if (!d || d.source !== 'bakeshift' || d.type !== 'ready') return;
+          ready = true;
+          store('bakeshift.signedIn', '1');
+          show('help', false);
+          hideSplash();
+        });
+        frame.addEventListener('load', function () {
+          setTimeout(hideSplash, 300);
+          // Loaded but never said "ready": most likely Google wants a sign-in, which can't happen in a frame.
+          setTimeout(function () { if (!ready) show('help'); }, 9000);
+        });
+        $('help-close').addEventListener('click', function () { show('help', false); });
+        show('app');
+        frame.src = appSrc;
+      }
+
+      function welcome() {
+        show('welcome');
+        var signedIn = load('bakeshift.signedIn') === '1';
+        show('step1-todo', !signedIn);
+        show('step1-done', signedIn);
+        $('step1').classList.toggle('done', signedIn);
+        if (isIOS) {
+          show('install-ios');
+          $('open-here').href = APP_URL;
+        } else if (isAndroid) {
+          show('install-manual-android');
+        } else {
+          show('install-other');
+        }
+        // Chrome/Edge: offer a one-tap install button when the browser allows it.
+        var deferred = null;
+        window.addEventListener('beforeinstallprompt', function (e) {
+          e.preventDefault();
+          deferred = e;
+          show('install-android');
+          show('install-manual-android', false);
+          show('install-other', false);
+        });
+        $('install-btn').addEventListener('click', function () {
+          if (!deferred) return;
+          deferred.prompt();
+          deferred.userChoice.then(function () { deferred = null; show('install-android', false); });
+        });
+        window.addEventListener('appinstalled', function () {
+          ['install-android', 'install-manual-android', 'install-other'].forEach(function (id) { show(id, false); });
+          show('installed');
+          $('step2').classList.add('done');
+        });
+      }
+
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+    })();
   </script>
 </body>
 </html>
