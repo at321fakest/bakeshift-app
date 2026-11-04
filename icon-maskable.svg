@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!-- Android home-screen version: phones always draw app icons on a solid tile, so this one
-       fills the square with white and keeps the loaf inside the safe zone. -->
+       fills the square with warm cream and keeps the loaf inside the safe zone. -->
   <defs>
     <linearGradient id="prism" gradientUnits="userSpaceOnUse" x1="126" y1="168" x2="386" y2="356">
       <stop offset="0" stop-color="#3cf2b4"/>
@@ -14,9 +14,9 @@
       <stop offset="1" stop-color="#1e90ff"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" fill="#ffffff"/>
+  <rect width="512" height="512" fill="#fff4e2"/>
   <g transform="translate(256 262) scale(1.1) translate(-256 -262)" fill="none" stroke="url(#prism)" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M126 300 C126 210 186 168 256 168 C326 168 386 210 386 300 L386 330 C386 346 374 356 358 356 L154 356 C138 356 126 346 126 330 Z" fill="#000000" stroke-width="14"/>
+    <path d="M126 300 C126 210 186 168 256 168 C326 168 386 210 386 300 L386 330 C386 346 374 356 358 356 L154 356 C138 356 126 346 126 330 Z" fill="#f3c27a" stroke-width="14"/>
     <path d="M144 300 L368 300" stroke-width="7" stroke-opacity=".6"/>
     <path d="M190 222 L216 262 M242 206 L270 250 M296 214 L322 254" stroke-width="13"/>
   </g>
