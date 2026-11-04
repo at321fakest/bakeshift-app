@@ -177,6 +177,8 @@
       var ua = navigator.userAgent;
       var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       var isAndroid = /Android/i.test(ua);
+      // A computer's browser: the app gets the whole tab (no frame), like a normal website.
+      var isDesktop = !isIOS && !isAndroid && !/Mobi/i.test(ua);
       var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
       var $ = function (id) { return document.getElementById(id); };
       var show = function (id, on) { $(id).classList.toggle('hidden', on === false); };
@@ -185,7 +187,9 @@
       var setupSrc = APP_URL + '?setup=1';
       $('signin').href = $('signin-again').href = $('help-signin').href = setupSrc;
 
-      if (shared || standalone || params.get('open')) runApp(); else welcome();
+      // On a computer, once you've signed in, the link goes straight to your recipes (?setup shows these steps again).
+      var desktopReady = isDesktop && !standalone && load('bakeshift.signedIn') === '1' && !params.has('setup');
+      if (shared || standalone || params.get('open') || desktopReady) runApp(); else welcome();
 
       function setTheme(color) {
         document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
@@ -194,7 +198,8 @@
 
       function runApp() {
         // Safari blocks Google's sign-in cookies inside frames, so iPhones open the app directly.
-        if (isIOS) { location.replace(appSrc); return; }
+        // A computer's browser tab gets the app full-window too, which also avoids blocked frame cookies.
+        if (isIOS || (isDesktop && !standalone)) { location.replace(appSrc); return; }
         var lastBg = load('bakeshift.bg');
         if (lastBg && /^#[0-9a-f]{3,8}$/i.test(lastBg)) setTheme(lastBg);
         document.body.classList.add('running');
@@ -244,6 +249,7 @@
           show('install-manual-android');
         } else {
           show('install-other');
+          if (isDesktop) $('open-here').href = APP_URL;
         }
         // Chrome/Edge: offer a one-tap install button when the browser allows it.
         var deferred = null;
