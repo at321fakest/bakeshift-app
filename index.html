@@ -184,6 +184,14 @@
       var show = function (id, on) { $(id).classList.toggle('hidden', on === false); };
 
       var appSrc = APP_URL + (shared ? '?import=' + encodeURIComponent(shared) : '');
+      // Shared a selection of text (select the recipe on the page → Share → Bakeshift): send the
+      // text itself after the #, so it imports even from sites that block apps from fetching them.
+      var sharedText = (params.get('text') || '').trim();
+      var textOnly = sharedText.replace(/https?:\/\/\S+/g, '').trim();
+      if (textOnly.length > 120) {
+        appSrc = APP_URL + '#bakeshift=' + encodeURIComponent(JSON.stringify({ u: shared, t: params.get('title') || '', x: sharedText.slice(0, 20000) }));
+        shared = shared || 'text';
+      }
       var setupSrc = APP_URL + '?setup=1';
       $('signin').href = $('signin-again').href = $('help-signin').href = setupSrc;
 
